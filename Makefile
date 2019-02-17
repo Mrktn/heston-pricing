@@ -2,11 +2,11 @@ TARGET   = heston-pricing
 
 CXX       = g++
 
-CXXFLAGS   = -Wall
+CXXFLAGS   = -Wall -pedantic
 
 LINKER   = g++
 # linking flags here
-LFLAGS   = -Wall -I. -lm
+LFLAGS   = -Wall -lm -lstdc++
 
 # change these to proper directories where each file should be
 SRCDIR   = src
