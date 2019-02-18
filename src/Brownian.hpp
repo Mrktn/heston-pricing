@@ -1,5 +1,5 @@
 /*
- * Generates paths of a 1D Brownian motion with unitary volatility, over [0 ; T].
+ * Generates paths of a d-dimensional Brownian motion with unitary volatility, over [0 ; T].
 */
 
 #include <vector>
