@@ -4,17 +4,17 @@
 /*
  * Generic class which represents 1-dimensional discrete paths of stochastic processes.
 */
-class Path1D {
+class Trajectory1D {
 
 public:
     // Constructor for uniform time steps
-    Path1D(double h, unsigned n) : n(n), h(h), times(n), values(n, 0.0) {
+    Trajectory1D(double h, unsigned n) : n(n), h(h), times(n), values(n, 0.0) {
         for(unsigned k = 1; k < n; ++k)
             times[k] = k * h;
     };
 
     // Constructor for non uniform time steps
-    Path1D(const std::function<double(unsigned)> & gamma, unsigned n) : n(n), gamma(gamma), times(n), values(n, 0.0) {
+    Trajectory1D(const std::function<double(unsigned)> & gamma, unsigned n) : n(n), gamma(gamma), times(n), values(n, 0.0) {
         double S = 0;
         for(unsigned k = 1; k < n; ++k) {
             S = S + gamma(k);
