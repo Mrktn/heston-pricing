@@ -3,16 +3,16 @@
 #include <algorithm>
 
 #include "Brownian.hpp"
-#include "PPSDE.hpp"
+#include "PPScheme.hpp"
 
 int main(int argc, char **argv) 
 {
     std::random_device rd;
     std::mt19937_64 gen(rd());
 
-    Brownian<2> B(0.5, 20);
+    PPSDE sde(std::array<double, 2> {0.0, 0.0}, 0.0, 0.0, 0.0);
 
-    PPSDE a(std::array<double, 2> {0.0, 0.0}, 0.0, 0.0, 0.0);
+    PPScheme s(sde, [](unsigned n) { return std::pow(n, - 1.0 / 3.0); }, 100);
 
     return 0;
 }

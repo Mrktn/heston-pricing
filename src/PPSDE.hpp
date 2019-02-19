@@ -7,6 +7,9 @@
 
 class PPSDE : public SDE<std::array<double, 2>, std::array<double, 2>> {
 
+    // The associated scheme should be able to access protected fields
+    friend class PPScheme;
+
 public:
     PPSDE(const std::array<double, 2> & initial, double k, double theta, double dzeta) : SDE(initial), k(k), theta(theta), dzeta(dzeta) { }
 
@@ -18,5 +21,6 @@ public:
         return std::array<double, 2> {std::sqrt(X[1]), dzeta * std::sqrt(X[1])};
     }
 
+protected:
     double k, theta, dzeta;
 };
