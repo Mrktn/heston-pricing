@@ -13,10 +13,10 @@ public:
     // Cast operator
     operator std::array<double, 2>() const { return current_state; }
 
-    PPScheme(PPSDE const & sde, const std::function<double(unsigned)> & gamma, unsigned nmax) : sde(sde), current_state(sde.init_value), gamma(gamma), n(0), nmax(nmax) {}
+    PPScheme(PPSDE const & sde, std::function<double(unsigned)> const & gamma, unsigned nmax) : sde(sde), current_state(sde.init_value), gamma(gamma), n(0), nmax(nmax) {}
 
-    std::array<double, 2> operator()(std::array<double, 2> Z) {
-        double g = gamma(n+1);
+    std::array<double, 2> operator()(std::array<double, 2> const & Z) {
+        double g = gamma(n + 1);
 
         current_state = std::array<double, 2> {
             current_state[0] - g*current_state[0] + std::sqrt(current_state[1] * g) * Z[0],

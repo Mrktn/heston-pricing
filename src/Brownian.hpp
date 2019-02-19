@@ -15,7 +15,7 @@ public:
     Brownian(double h, unsigned n) : Trajectory<Dimension>(h, n), G(0, 1) { };
 
     // Constructor for non uniform time steps
-    Brownian(const std::function<double(unsigned)> & gamma, unsigned n) : Trajectory<Dimension>(gamma, n), G(0, 1) { };
+    Brownian(std::function<double(unsigned)> const & gamma, unsigned n) : Trajectory<Dimension>(gamma, n), G(0, 1) { };
 
     // Returns the values of a newly generated path
     std::vector<std::array<double, Dimension>> & operator()(std::mt19937_64 & gen) {
