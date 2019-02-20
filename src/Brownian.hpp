@@ -11,9 +11,6 @@ template <unsigned Dimension>
 class Brownian : public Trajectory<Dimension> {
 
 public:
-    // Constructor for uniform time steps
-    Brownian(double h, unsigned n) : Trajectory<Dimension>(h, n), G(0, 1) { };
-
     // Constructor for non uniform time steps
     Brownian(std::function<double(unsigned)> const & gamma, unsigned n) : Trajectory<Dimension>(gamma, n), G(0, 1) { };
 

@@ -10,9 +10,6 @@
 class Brownian1D : public Trajectory1D {
 
 public:
-    // Constructor for uniform time steps
-    Brownian1D(double h, unsigned n) : Trajectory1D(h, n), G(0, 1) { };
-
     // Constructor for non uniform time steps
     Brownian1D(std::function<double(unsigned)> const & gamma, unsigned n) : Trajectory1D(gamma, n), G(0, 1) { };
 
