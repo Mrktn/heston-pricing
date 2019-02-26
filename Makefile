@@ -2,10 +2,10 @@ TARGET   = heston-pricing
 
 CXX       = g++
 
-CXXFLAGS   = -Wall -pedantic
+CXXFLAGS   = -Wall -O1 -g3 -ggdb3 -pedantic
 
 LINKER   = g++
-# linking flags here
+# linking flags here-fsanitize=address
 LFLAGS   = -Wall -lm -lstdc++
 
 # change these to proper directories where each file should be

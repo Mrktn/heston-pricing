@@ -11,7 +11,9 @@ class PPSDE : public SDE<std::array<double, 2>, std::array<double, 2>> {
     friend class PPScheme;
 
 public:
+    PPSDE(PPSDE const & sde) : SDE(sde.init_value) { std::cout << "oh hi" << std::endl; k = sde.k; theta = sde.theta; dzeta = sde.dzeta; }
     PPSDE(std::array<double, 2> const & initial, double k, double theta, double dzeta) : SDE(initial), k(k), theta(theta), dzeta(dzeta) { }
+    ~PPSDE() {std::cout << "oskour depuis sde" << std::endl;}
 
     std::array<double, 2> b(std::array<double, 2> const & X) {
         return std::array<double, 2> { -X[0], k * (theta - X[1])};

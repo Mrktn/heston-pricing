@@ -13,7 +13,9 @@ public:
     // Cast operator
     operator std::array<double, 2>() const { return current_state; }
 
-    PPScheme(PPSDE const & sde, std::function<double(unsigned)> const & gamma, unsigned nmax) : sde(sde), current_state(sde.init_value), gamma(gamma), n(0), nmax(nmax) {}
+    PPScheme(PPSDE const & sde, std::function<double(unsigned)> const & gamma) : sde(sde), current_state(sde.init_value), gamma(gamma), n(0) {}
+
+    ~PPScheme() {std::cout << "oskour depuis scheme" << std::endl;}
 
     std::array<double, 2> operator()(std::array<double, 2> const & Z) {
         double g = gamma(n + 1);
@@ -31,5 +33,5 @@ protected:
     PPSDE sde;
     std::array<double, 2> current_state;
     std::function<double(unsigned)> gamma;
-    unsigned n, nmax;
+    unsigned n;
 };
