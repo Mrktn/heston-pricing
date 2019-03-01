@@ -21,7 +21,7 @@ public:
         double Gamma_running = 0.0, Gamma_ref = 0.0;
         unsigned curr = 0;
 
-        std::array<double, 2> const init = {0.1, theta};
+        std::array<double, 2> const init = {0.0, theta};
         PPSDE const sde(init, k, theta, dzeta);
         PPScheme scheme(sde, gamma);
 
@@ -40,9 +40,7 @@ public:
         double H = 0.0;
 
         std::vector<double> Xi = {1.0};
-        //Xi.push_back(1.0);
         std::vector<double> prefix = {0.0};
-        //prefix.push_back(0.0);
 
         double last_increment_psi = 0.0, last_increment_t = 0.0;
 
@@ -60,7 +58,7 @@ public:
                 last_increment_psi = prev_psi;
                 I += prev_psi * deltat;
 
-                double M = prev_M + std::sqrt(deltat * prev_X[1]) * G(gen);
+                double M = X[0];
                 double V = prev_V + deltat * prev_X[1];
                 double psi = prev_psi * std::exp((alpha * deltat) + (beta * prev_X[1] * deltat) + (gammatilde * (X[1] - prev_X[1])) + (deltatilde * (M - prev_M)));
 

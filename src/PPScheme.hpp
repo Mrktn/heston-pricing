@@ -1,6 +1,6 @@
 /*
  * The Berkaoui et al scheme as presented by Pagès & Panloup.
- * The scheme is for (y, v) in this order.
+ * The scheme is for (M, v) in this order.
 */
 
 // TODO: make it a subclass of a more general "Scheme" class
@@ -19,7 +19,7 @@ public:
         double g = gamma(n + 1);
 
         current_state = std::array<double, 2> {
-            current_state[0] - g*current_state[0] + std::sqrt(current_state[1] * g) * Z[0],
+            current_state[0] + std::sqrt(current_state[1] * g) * Z[0],
             std::abs(current_state[1] + sde.k * g * (sde.theta - current_state[1]) + sde.dzeta * std::sqrt(current_state[1] * g) * Z[1])
         };
 
