@@ -49,8 +49,6 @@ public:
         double curr_nu = 0.0;
         double H = 0.0;
 
-        std::cout << "anchor" << std::endl;
-
         std::vector<double> Xi = {1.0};
         //Xi.push_back(1.0);
         std::vector<double> prefix = {0.0};
@@ -103,7 +101,7 @@ public:
             Gamma_ref += gamma(k_iter + 1);
         }
 
-        std::cout << curr_nu << std::endl;
+        return curr_nu;
     }
 
 
