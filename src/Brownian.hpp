@@ -2,6 +2,7 @@
  * Generates paths of a d-dimensional Brownian motion with unitary volatility, over [0 ; T].
 */
 
+#include <array>
 #include <vector>
 #include <random>
 

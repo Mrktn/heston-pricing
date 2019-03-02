@@ -5,6 +5,8 @@
  * This is the SDE satisfied by (M, v)
 */
 
+#include <array>
+
 #include "SDE.hpp"
 
 class PPSDE : public SDE<std::array<double, 2>, std::array<double, 2>> {
