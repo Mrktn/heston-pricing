@@ -25,10 +25,10 @@ public:
         PPSDE const sde(init, k, theta, dzeta);
         PPScheme scheme(sde, gamma);
 
-        const double alpha      = r - rho * k * theta / dzeta;
+        const double kappa      = r - rho * k * theta / dzeta;
         const double beta       = rho * k / dzeta - 0.5;
-        const double gammatilde = rho / dzeta;
-        const double deltatilde      = std::sqrt(1 - rho * rho);
+        const double mu         = rho / dzeta;
+        const double upsilon    = std::sqrt(1 - rho * rho);
 
         double I = 0.0;
         double prev_Gamma = 0.0;
@@ -60,10 +60,10 @@ public:
 
                 double M = X[0];
                 double V = prev_V + deltat * prev_X[1];
-                double psi = prev_psi * std::exp((alpha * deltat) + (beta * prev_X[1] * deltat) + (gammatilde * (X[1] - prev_X[1])) + (deltatilde * (M - prev_M)));
+                double psi = prev_psi * std::exp((kappa * deltat) + (beta * prev_X[1] * deltat) + (mu * (X[1] - prev_X[1])) + (upsilon * (M - prev_M)));
 
                 if (curr <= n_iter) {
-                    Xi.push_back(std::exp(alpha * Gamma_running + beta * V + deltatilde * M));
+                    Xi.push_back(std::exp(kappa * Gamma_running + beta * V + upsilon * M));
                     prefix.push_back(I);
                 }
 
