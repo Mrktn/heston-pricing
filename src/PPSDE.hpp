@@ -25,6 +25,10 @@ public:
         return std::array<double, 2> {std::sqrt(X[1]), dzeta * std::sqrt(X[1])};
     }
 
+    std::array<double, 2> kappa(std::array<double, 2> const & X) {
+        return std::array<double, 2> {0, 0};
+    }
+
 protected:
     double k, theta, dzeta;
 };

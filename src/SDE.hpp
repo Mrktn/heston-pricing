@@ -1,6 +1,9 @@
 /*
- * Aggregates the features of a stochastic homogeneous diffusion.
+ * Aggregates the features of a homogeneous Lévy-driven SDE.
  * Inspired by Vincent Lemaire's implementation, adapted for own enjoyment.
+ *
+ * dXt = b(Xt)dt + sigma(Xt)dWt + k(Xt)dZt
+ * where Z is an integrable, purely discontinuous, R-valued Lévy process
 */
 
 #include <functional>
@@ -13,6 +16,7 @@ public:
     
     virtual TState b(TState const &) = 0;
     virtual TSigma sigma(TState const &) = 0;
+    virtual TState kappa(TState const &) = 0;
 
 protected:
     TState init_value;
