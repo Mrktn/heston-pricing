@@ -3,10 +3,8 @@
  * The scheme is for (M, v) in this order.
 */
 
-// TODO: make it a subclass of a more general "Scheme" class
-
-#include "PPSDE.hpp"
 #include <random>
+#include "PPSDE.hpp"
 
 class PPScheme {
 
@@ -14,7 +12,7 @@ public:
     // Cast operator
     operator std::array<double, 2>() const { return current_state; }
 
-    PPScheme(PPSDE const & sde, std::function<double(unsigned)> const & gamma) : sde(sde), current_state(sde.init_value), gamma(gamma), n(0), G(0,1) {}
+    PPScheme(PPSDE const & sde, std::function<double(unsigned)> const & gamma) : sde(sde), current_state(sde.init_value), gamma(gamma), n(0), G(0, 1) {}
 
     std::array<double, 2> operator()(std::mt19937_64 & gen) {
         double g = gamma(n + 1);
