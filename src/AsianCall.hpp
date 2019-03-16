@@ -6,11 +6,14 @@
 */
 
 #include <cassert>
+#include <array>
+#include <functional>
+#include "PPScheme.hpp"
 
 class AsianCall {
 
 public:
-    AsianCall(double s0, double r, double T, double K, double rho, double k, double theta, double dzeta) : s0(s0), r(r), T(T), K(K), rho(rho), k(k), theta(theta), dzeta(dzeta), G(0, 1) {
+    AsianCall(double s0, double r, double T, double K, double rho, double k, double theta, double dzeta) : s0(s0), r(r), T(T), K(K), rho(rho), k(k), theta(theta), dzeta(dzeta) {
         // Asserts that the Berkaoui et al. condition is satisfied
         //assert(2*k*theta / (dzeta*dzeta) > 1 + 2 * std::sqrt(6) / dzeta);
     }
@@ -50,7 +53,7 @@ public:
 
                 curr++;
                 Gamma_running += gamma(curr);
-                std::array<double, 2> const X = scheme(std::array<double, 2> {G(gen), G(gen)});
+                std::array<double, 2> const X = scheme(gen);
 
                 double deltat = Gamma_running - prev_Gamma;
 
@@ -103,6 +106,4 @@ protected:
 
     // Heston parameters
     double k, theta, dzeta;
-
-    std::normal_distribution<> G;
 };

@@ -3,6 +3,9 @@
 */
 
 #include <cassert>
+#include <array>
+#include <functional>
+#include "PPScheme.hpp"
 
 class EuropeanCall {
 
@@ -46,7 +49,7 @@ public:
                 curr++;
                 Gamma_running += gamma(curr);
 
-                std::array<double, 2> const X = scheme(std::array<double, 2> {G(gen), G(gen)});
+                std::array<double, 2> const X = scheme(gen);
                 double deltat = Gamma_running - prev_Gamma;
                 double M = X[0];
                 double V = prev_V + deltat * prev_X[1];
