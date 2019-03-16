@@ -1,6 +1,6 @@
 /*
  * The Pagès-Panloup SDE yields a stationary process suitable for derivatives pricing
- * under Heston assumptions and decreasing Euler time steps.
+ * under Heston assumptions with no jumps involved.
 
  * This is the SDE satisfied by (M, v)
 */
