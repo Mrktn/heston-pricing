@@ -70,7 +70,10 @@ public:
             amended_trueI += last_increment_psi * (T - Gamma_actual + Gamma_ref);
             amended_trueI = ((amended_trueI - prefix[k_iter]) / Xi[k_iter]);
 
-            double F = s0 * (std::exp(-Omega * T) - std::exp(-r * T)) / ((r-Omega) * T) - std::exp(-r * T) * K + std::exp(-r * T) * std::max(K - amended_trueI / T, 0.0);
+            double F1 = s0 * (std::exp(-Omega * T) - std::exp(-r * T)) / ((r-Omega) * T) - std::exp(-r * T) * K + std::exp(-r * T) * std::max(K - amended_trueI / T, 0.0);
+            double F2 = std::exp(-r * T) * std::max(amended_trueI / T - K, 0.0);
+
+            double F = (K < s0 * std::exp(r * T)) ? F1 : F2;
 
             H += eta(k_iter + 1);
             curr_nu = curr_nu + (eta(k_iter + 1) / H) * (F - curr_nu);
