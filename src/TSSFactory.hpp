@@ -42,12 +42,12 @@ private:
     // S(alpha, a * deltat)
     double S(double deltat, std::mt19937_64 & gen) {
         double U = unif_pi(gen), E = expon(gen);
-        double aprime = a * deltat;
-        double Theta = atan(tan(M_PI * alpha / 2.0));
+        double aprime = a*deltat;
+        double Theta = std::atan(std::tan(M_PI * alpha / 2.0));
 
-        double X = std::pow(- aprime * tgamma(- alpha) * cos(M_PI * alpha / 2.0), 1.0 / alpha);
-        double Y = sin(alpha * U + Theta) / std::pow(cos(U) * cos(Theta), 1.0 / alpha);
-        double Z = std::pow(cos((1.0 - alpha) * U - Theta) / E, (1.0 - alpha) / alpha);
+        double X = std::pow(- aprime * std::tgamma(- alpha) * std::cos(M_PI * alpha / 2.0), 1.0 / alpha);
+        double Y = std::sin(alpha * U + Theta) / std::pow(std::cos(U) * std::cos(Theta), 1.0 / alpha);
+        double Z = std::pow(std::cos((1.0 - alpha) * U - Theta) / E, (1.0 - alpha) / alpha);
 
         return X * Y * Z;
     }

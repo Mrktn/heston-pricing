@@ -1,21 +1,16 @@
 /*
- * Approximates the price of an asian call.
- * TODO: the prices for several strikes can be computed at the same time in a single simulation
- * TODO: should 1) inherit common features from a superclass (Derivative ? PriceablePayoff ?)
- *              2) befriend a HestonUnderlying class
+ * Approximates the price of an asian call in a general Lévy diffusive model.
 */
 
 #include <cassert>
 #include <array>
 #include <functional>
-#include "PPScheme.hpp"
+#include "BNSScheme.hpp"
 
-class AsianCall {
+class BNSAsianCall {
 
 public:
-    AsianCall(double s0, double r, double T, double K, double rho, double k, double theta, double dzeta) : s0(s0), r(r), T(T), K(K), rho(rho), k(k), theta(theta), dzeta(dzeta) {
-        // Asserts that the Berkaoui et al. condition is satisfied
-        //assert(2*k*theta / (dzeta*dzeta) > 1 + 2 * std::sqrt(6) / dzeta);
+    BNSAsianCall(double s0, double r, double T, double K, double rho, double k, double theta, double dzeta, double alpha, double c, double lambda, double phi) : s0(s0), r(r), T(T), K(K), rho(rho), k(k), theta(theta), dzeta(dzeta), alpha(alpha), c(c), lambda(lambda), phi(phi) {
     }
 
     // TODO: successive calls of an iter() method ?
@@ -24,19 +19,14 @@ public:
         double Gamma_running = 0.0, Gamma_ref = 0.0;
         unsigned curr = 0;
 
-        std::array<double, 2> const init = {0.0, theta};
-        PPSDE sde(init, k, theta, dzeta);
-        PPScheme scheme(&sde, gamma);
+        std::array<double, 2> const init = {0.0, 0.0};
 
-        const double kappa      = r - rho * k * theta / dzeta;
-        const double beta       = rho * k / dzeta - 0.5;
-        const double mu         = rho / dzeta;
-        const double upsilon    = std::sqrt(1 - rho * rho);
+        BNSSDE sde(init, k, theta, dzeta, r, rho, alpha, c, lambda, phi);
+        BNSScheme scheme(&sde, gamma);
 
         double I = 0.0;
         double prev_Gamma = 0.0;
         std::array<double, 2>  prev_X = init;
-        double prev_M = 0.0, prev_V = 0.0;
         double prev_psi = s0;
         double Gamma_actual = 0.0;
         double curr_nu = 0.0;
@@ -47,32 +37,29 @@ public:
 
         double last_increment_psi = 0.0, last_increment_t = 0.0;
 
+        double const Omega = (c/alpha) * (std::pow(lambda - phi, alpha) - std::pow(lambda, alpha)) * tgamma(1.0 - alpha);
+
         for (unsigned k_iter = 0; k_iter < n_iter; ++k_iter) {
             do {
                 Gamma_actual = Gamma_running;
 
                 curr++;
                 Gamma_running += gamma(curr);
-                std::array<double, 2> const X = scheme(gen);
-
+                std::array<double, 2> X = scheme(gen);
                 double deltat = Gamma_running - prev_Gamma;
 
                 last_increment_t = deltat;
                 last_increment_psi = prev_psi;
                 I += prev_psi * deltat;
 
-                double M = X[0];
-                double V = prev_V + deltat * prev_X[1];
-                double psi = prev_psi * std::exp((kappa * deltat) + (beta * prev_X[1] * deltat) + (mu * (X[1] - prev_X[1])) + (upsilon * (M - prev_M)));
+                double psi = s0 * std::exp(X[0]);
 
                 if (curr <= n_iter) {
-                    Xi.push_back(std::exp(kappa * Gamma_running + beta * V + upsilon * M));
+                    Xi.push_back(std::exp(X[0]));
                     prefix.push_back(I);
                 }
 
                 prev_Gamma = Gamma_running;
-                prev_M = M;
-                prev_V = V;
                 prev_X = X;
                 prev_psi = psi;
             } while (Gamma_running - Gamma_ref <= T);
@@ -83,7 +70,7 @@ public:
             amended_trueI += last_increment_psi * (T - Gamma_actual + Gamma_ref);
             amended_trueI = ((amended_trueI - prefix[k_iter]) / Xi[k_iter]);
 
-            double F = s0 * (1 - std::exp(-r*T)) / (r*T) - std::exp(-r * T)*K + std::exp(-r * T) * std::max(K - amended_trueI / T, 0.0);
+            double F = s0 * (std::exp(-Omega * T) - std::exp(-r * T)) / ((r-Omega) * T) - std::exp(-r * T) * K + std::exp(-r * T) * std::max(K - amended_trueI / T, 0.0);
 
             H += eta(k_iter + 1);
             curr_nu = curr_nu + (eta(k_iter + 1) / H) * (F - curr_nu);
@@ -106,4 +93,7 @@ protected:
 
     // Heston parameters
     double k, theta, dzeta;
+
+    // BNF parameters
+    double alpha, c, lambda, phi;
 };

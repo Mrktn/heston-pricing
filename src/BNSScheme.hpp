@@ -13,7 +13,8 @@ public:
     // Cast operator
     operator std::array<double, 2>() const { return current_state; }
 
-    BNSScheme(BNSSDE const & sde, std::function<double(unsigned)> const & gamma) : sde(sde), tss(sde.alpha, sde.c, sde.lambda), current_state(sde.init_value), gamma(gamma), n(0), G(0, 1) {}
+    BNSScheme(BNSSDE * sde, std::function<double(unsigned)> const & gamma) : sde(sde), tss(sde->alpha, sde->c, sde->lambda), current_state(sde->init_value), gamma(gamma), n(0), G(0, 1) {
+    }
 
     std::array<double, 2> operator()(std::mt19937_64 & gen) {
         double g = gamma(n + 1);
@@ -22,8 +23,8 @@ public:
         double vt = current_state[1];
 
         current_state = std::array<double, 2> {
-            current_state[0] + (sde.r - 0.5 * vt)*g + sde.rho * std::sqrt(vt * g) * Z[1] + std::sqrt((1 - sde.rho * sde.rho) * vt * g) * Z[0] + sde.phi * jump,
-            std::abs(vt + sde.k * g * (sde.theta - vt) + sde.dzeta * std::sqrt(current_state[1] * g) * Z[1] + jump)
+            current_state[0] + (sde->r - 0.5 * vt)*g + sde->rho * std::sqrt(vt * g) * Z[1] + std::sqrt((1 - sde->rho * sde->rho) * vt * g) * Z[0] + sde->phi * jump,
+            vt + sde->k * (sde->theta - vt)*g + sde->dzeta * std::sqrt(vt * g) * Z[1] + jump
         };
 
         n += 1;
@@ -31,7 +32,7 @@ public:
     }
 
 protected:
-    BNSSDE sde;
+    BNSSDE *sde;
     TSSFactory tss;
     std::array<double, 2> current_state;
     std::function<double(unsigned)> gamma;

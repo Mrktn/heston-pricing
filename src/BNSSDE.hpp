@@ -16,7 +16,7 @@ class BNSSDE : public SDE<std::array<double, 2>, std::array<std::array<double, 2
     friend class BNSScheme;
 
 public:
-    BNSSDE(std::array<double, 2> const & initial, double k, double theta, double dzeta) : SDE(initial), k(k), theta(theta), dzeta(dzeta) { }
+    BNSSDE(std::array<double, 2> const & initial, double k, double theta, double dzeta, double r, double rho, double alpha, double c, double lambda, double phi) : SDE(initial), k(k), theta(theta), dzeta(dzeta), r(r), rho(rho), alpha(alpha), c(c), lambda(lambda), phi(phi) { }
 
     std::array<double, 2> b(std::array<double, 2> const & X) {
         return std::array<double, 2> {r - X[1] / 2, k * (theta - X[1])};
@@ -34,9 +34,8 @@ public:
     }
 
 protected:
-    double r, rho;
     double k, theta, dzeta;
+    double r, rho;
     double alpha, c, lambda;
     double phi;
-
 };

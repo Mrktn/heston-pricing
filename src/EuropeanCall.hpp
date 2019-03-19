@@ -22,8 +22,8 @@ public:
         unsigned curr = 0;
 
         std::array<double, 2> const init = {0.0, theta};
-        PPSDE const sde(init, k, theta, dzeta);
-        PPScheme scheme(sde, gamma);
+        PPSDE sde(init, k, theta, dzeta);
+        PPScheme scheme(&sde, gamma);
 
         const double kappa      = r - rho * k * theta / dzeta;
         const double beta       = rho * k / dzeta - 0.5;
