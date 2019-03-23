@@ -10,7 +10,7 @@
 class EuropeanCall {
 
 public:
-    EuropeanCall(double s0, double r, double T, double K, double rho, double k, double theta, double dzeta) : s0(s0), r(r), T(T), K(K), rho(rho), k(k), theta(theta), dzeta(dzeta), G(0, 1) {
+    EuropeanCall(double s0, double r, double T, double K, double rho, double k, double theta, double dzeta) : s0(s0), r(r), T(T), K(K), rho(rho), k(k), theta(theta), dzeta(dzeta) {
         // Asserts that the Berkaoui et al. condition is satisfied
         //assert(2*k*theta / (dzeta*dzeta) > 1 + 2 * std::sqrt(6) / dzeta);
     }
@@ -34,7 +34,8 @@ public:
         std::array<double, 2>  prev_X = init;
         std::array<double, 2>  pprev_X;
         double prev_M = 0.0, prev_V = 0.0;
-        double pprev_M = 0.0, pprev_V = 0.0;
+        double pprev_M = 0.0;
+	//double pprev_V = 0.0;
         double prev_psi = s0;
         double curr_nu = 0.0;
         double H = 0.0;
@@ -42,7 +43,8 @@ public:
 
         std::vector<double> Xi = {1.0};
         
-        double last_increment_psi = 0.0, last_increment_t = 0.0;
+        double last_increment_psi = 0.0;
+	//double last_increment_t = 0.0;
 
         for (unsigned k_iter = 0; k_iter < n_iter; ++k_iter) {
             do {
@@ -55,7 +57,7 @@ public:
                 double V = prev_V + deltat * prev_X[1];
                 double increment_psi = std::exp((kappa * deltat) + (beta * prev_X[1] * deltat) + (mu * (X[1] - prev_X[1])) + (upsilon * (M - prev_M)));
                 psi = prev_psi * increment_psi;
-                last_increment_t = deltat;
+                //last_increment_t = deltat;
                 last_increment_psi = increment_psi;
 
                 if (curr <= n_iter)      
@@ -65,7 +67,7 @@ public:
 
                 prev_Gamma = Gamma_running;
                 pprev_M = prev_M;
-                pprev_V = prev_V;
+                //pprev_V = prev_V;
                 pprev_X = prev_X;
                 prev_M = M;
                 prev_V = V;
@@ -105,5 +107,5 @@ protected:
     // Heston parameters
     double k, theta, dzeta;
 
-    std::normal_distribution<> G;
+    //std::normal_distribution<> G;
 };
