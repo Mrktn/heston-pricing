@@ -3,6 +3,9 @@
  * The scheme is for (X, v) in this order.
 */
 
+#ifndef BNSSCHEME_HPP_INCLUDED
+#define BNSSCHEME_HPP_INCLUDED
+
 #include <random>
 #include "BNSSDE.hpp"
 #include "TSSFactory.hpp"
@@ -39,3 +42,5 @@ protected:
     unsigned n;
     std::normal_distribution<> G;
 };
+
+#endif

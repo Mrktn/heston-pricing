@@ -6,6 +6,9 @@
  * where Z is an integrable, purely discontinuous, R-valued Lévy process
 */
 
+#ifndef SDE_HPP_INCLUDED
+#define SDE_HPP_INCLUDED
+
 #include <functional>
 
 template <typename TState = double, typename TSigma = double>
@@ -21,3 +24,5 @@ public:
 protected:
     TState init_value;
 };
+
+#endif

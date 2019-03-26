@@ -3,6 +3,9 @@
  * The scheme is for (M, v) in this order.
 */
 
+#ifndef PPSCHEME_HPP_INCLUDED
+#define PPSCHEME_HPP_INCLUDED
+
 #include <random>
 #include "PPSDE.hpp"
 
@@ -34,3 +37,5 @@ protected:
     unsigned n;
     std::normal_distribution<> G;
 };
+
+#endif

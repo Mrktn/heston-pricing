@@ -2,11 +2,11 @@ TARGET   = heston-pricing
 
 CXX       = g++
 
-CXXFLAGS   = -Wall -Og -g3 -ggdb3 -pedantic
+CXXFLAGS   = -Wall -O3 -march=native -pedantic
 
 LINKER   = g++
 # linking flags here
-LFLAGS   = -Wall -lm -lstdc++
+LFLAGS   = -Wall -lm -lboost_program_options -lstdc++
 
 # change these to proper directories where each file should be
 SRCDIR   = src
