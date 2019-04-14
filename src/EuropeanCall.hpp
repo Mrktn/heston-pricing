@@ -82,7 +82,11 @@ public:
 
             amended_truePsi /= Xi[k_iter];
             //double F = std::exp(-r*T) * std::max(amended_truePsi - K, 0.0);
-            double F = s0 - std::exp(-r * T)*K + std::exp(-r * T) * std::max(K - amended_truePsi, 0.0); // use call put parity to reduce variance
+            double F1 = s0 - std::exp(-r * T)*K + std::exp(-r * T) * std::max(K - amended_truePsi, 0.0); 
+            double F2 = std::exp(-r * T) * std::max(amended_truePsi - K, 0.0);
+            
+            // use call put parity to reduce variance in out of the money forward scenarios
+            double F = (K < s0 * std::exp(r * T)) ? F1 : F2;
 
             H += eta(k_iter + 1);
             curr_nu = curr_nu + (eta(k_iter + 1) / H) * (F - curr_nu);
