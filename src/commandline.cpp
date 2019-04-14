@@ -44,7 +44,7 @@ int handle_commandline(int argc, char **argv) {
         ("jumpscale", value<double>()->default_value(0.01, "0.01"), "Scale of the jump process (c)")
         ("jumptemperedexp", value<double>()->default_value(1, "1"), "Exponent of the tempered stable process (lambda)")
         ("jumpspotrelative", value<double>()->default_value(-1, "-1"), "Intensity of the spot jump relative to var jump (phi)")
-        ("imply","Return the implied volatility of the european call under the B-S    framework");
+        ("imply", value<int>()->default_value(0, "0")->implicit_value(100, "100"),"Return the implied volatility of the avg european call price under the B-S framework, please provide the number of simulations to be made.");
 
         // BNSAsianCall asset(50, 0.05, 1, 44, 0.0, 1, 0.00, 0, 0.5, 0.01, 1, -1.0);
         // AsianCall asset(50, 0.05, 1., 44, 0.5, 2, 0.01, 0.1);
@@ -64,7 +64,7 @@ int handle_commandline(int argc, char **argv) {
             return 1;
 
         
-        if (vm.count("imply") && !(vm["type"].as<std::string>() == "european")) {
+        if (vm["imply"].as<int>() != 0 && !(vm["type"].as<std::string>() == "european")) {
             std::cout << "Implied volatility is only implemented for the european call." << std::endl;
             return 1;
         }
@@ -98,19 +98,25 @@ int handle_commandline(int argc, char **argv) {
             return 0;
         }
         
-        else if (vm["type"].as<std::string>() == "european" && vm["model"].as<std::string>() == "heston" && vm.count("imply")) {
+        else if (vm["type"].as<std::string>() == "european" && vm["model"].as<std::string>() == "heston" && vm["imply"].as<int>() != 0) {
             double S0 = vm["S0"].as<double>(), K = vm["strike"].as<double>(), T = vm["maturity"].as<double>(), r = vm["interest"].as<double>();
              // Model parameters
-             double rho = vm["correlation"].as<double>(), k = vm["elasticity"].as<double>(), theta = vm["meanrevert"].as<double>(), dzeta = vm["volofvar"].as<double>();
-             EuropeanCall asset(S0, r, T, K, rho, k, theta, dzeta);
-             VolImplier<double> vol(S0, K, r, T);
-             double price = asset.simulate(vm["iters"].as<int>(), gamma, eta, gen);
-             double impvol = vol.implied_vol(price);
-             std::cout << impvol << std::endl;
-             return 0;
-         }
+            double rho = vm["correlation"].as<double>(), k = vm["elasticity"].as<double>(), theta = vm["meanrevert"].as<double>(), dzeta = vm["volofvar"].as<double>();
+            int N = vm["imply"].as<int>();
+            double price = 0;
+            for (int i = 0; i < N; ++i) {
+                EuropeanCall asset(S0, r, T, K, rho, k, theta, dzeta);
+                //price += asset.simulate(vm["iters"].as<int>(), gamma, eta, gen);
+                price += EuropeanCall(S0, r, T, K, rho, k, theta, dzeta).simulate(vm["iters"].as<int>(), gamma, eta, gen);
+            }
+            price /= N;
+            VolImplier<double> vol(S0, K, r, T);
+            double impvol = vol.implied_vol(price);
+            std::cout << impvol << std::endl;
+            return 0;
+        }
 
-        else if (vm["type"].as<std::string>() == "european" && vm["model"].as<std::string>() == "heston" && !vm.count("imply")) {
+        else if (vm["type"].as<std::string>() == "european" && vm["model"].as<std::string>() == "heston") {
             // Market parameters
             double S0 = vm["S0"].as<double>(), K = vm["strike"].as<double>(), T = vm["maturity"].as<double>(), r = vm["interest"].as<double>();
             // Model parameters
