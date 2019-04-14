@@ -43,7 +43,8 @@ int handle_commandline(int argc, char **argv) {
         ("jumpstability", value<double>()->default_value(0.5, "0.5"), "Stability order of the jump process (alpha)")
         ("jumpscale", value<double>()->default_value(0.01, "0.01"), "Scale of the jump process (c)")
         ("jumptemperedexp", value<double>()->default_value(1, "1"), "Exponent of the tempered stable process (lambda)")
-        ("jumpspotrelative", value<double>()->default_value(-1, "-1"), "Intensity of the spot jump relative to var jump (phi)");
+        ("jumpspotrelative", value<double>()->default_value(-1, "-1"), "Intensity of the spot jump relative to var jump (phi)")
+        ("imply","Return the implied volatility of the european call under the B-S    framework");
 
         // BNSAsianCall asset(50, 0.05, 1, 44, 0.0, 1, 0.00, 0, 0.5, 0.01, 1, -1.0);
         // AsianCall asset(50, 0.05, 1., 44, 0.5, 2, 0.01, 0.1);
@@ -62,6 +63,11 @@ int handle_commandline(int argc, char **argv) {
         if (!params_fit_for_simu(vm))
             return 1;
 
+        
+        if (vm.count("imply") && !(vm["type"].as<std::string>() == "european")) {
+            std::cout << "Implied volatility is only implemented for the european call." << std::endl;
+            return 1;
+        }
 
         double const gammaexp = vm["gammaexponent"].as<double>(), etaexp = vm["etaexponent"].as<double>();
         std::function<double(unsigned)> const gamma = [gammaexp](unsigned n) {return 0.01 * std::pow(n, gammaexp);};
@@ -91,8 +97,20 @@ int handle_commandline(int argc, char **argv) {
             std::cout << asset.simulate(vm["iters"].as<int>(), gamma, eta, gen) << std::endl;
             return 0;
         }
+        
+        else if (vm["type"].as<std::string>() == "european" && vm["model"].as<std::string>() == "heston" && vm.count("imply")) {
+            double S0 = vm["S0"].as<double>(), K = vm["strike"].as<double>(), T = vm["maturity"].as<double>(), r = vm["interest"].as<double>();
+             // Model parameters
+             double rho = vm["correlation"].as<double>(), k = vm["elasticity"].as<double>(), theta = vm["meanrevert"].as<double>(), dzeta = vm["volofvar"].as<double>();
+             EuropeanCall asset(S0, r, T, K, rho, k, theta, dzeta);
+             VolImplier<double> vol(S0, K, r, T);
+             double price = asset.simulate(vm["iters"].as<int>(), gamma, eta, gen);
+             double impvol = vol.implied_vol(price);
+             std::cout << impvol << std::endl;
+             return 0;
+         }
 
-        else if (vm["type"].as<std::string>() == "european" && vm["model"].as<std::string>() == "heston") {
+        else if (vm["type"].as<std::string>() == "european" && vm["model"].as<std::string>() == "heston" && !vm.count("imply")) {
             // Market parameters
             double S0 = vm["S0"].as<double>(), K = vm["strike"].as<double>(), T = vm["maturity"].as<double>(), r = vm["interest"].as<double>();
             // Model parameters
@@ -101,19 +119,7 @@ int handle_commandline(int argc, char **argv) {
             std::cout << asset.simulate(vm["iters"].as<int>(), gamma, eta, gen) << std::endl;
             return 0;
         }
-        else if (vm["type"].as<std::string>() == "impvol" && vm["model"].as<std::string>() == "heston") {
-            double S0 = vm["S0"].as<double>(), K = vm["strike"].as<double>(), T = vm["maturity"].as<double>(), r = vm["interest"].as<double>();
-             // Model parameters
-             double rho = vm["correlation"].as<double>(), k = vm["elasticity"].as<double>(), theta = vm["meanrevert"].as<double>(), dzeta = vm["volofvar"].as<double>();
-             EuropeanCall asset(S0, r, T, K, rho, k, theta, dzeta);
-             VolImplier<double> vol(S0, K, r, T);
-             double price = asset.simulate(vm["iters"].as<int>(), gamma, eta, gen);
-             //std::cout << "Price: " << price << std::endl;
-             double impvol = vol.implied_vol(price);
-             std::cout << impvol << std::endl;
-             //std::cout << "BS price: " << call_price(S0, K, r, impvol, T) << std::endl;
-             return 0;
-         }
+        
         else {
             std::cout << "Invalid / unimplemented combination of payoff / model (" << vm["type"].as<std::string>() << " / " << vm["model"].as<std::string>() << ") !" << std::endl;
             return 1;
