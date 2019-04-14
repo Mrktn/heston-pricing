@@ -29,6 +29,7 @@ Main functionalities (flags), all will be called using default numeric values:
 benchmarks/                   -- benchmark plots
 	   test_iters.py
 	   test_maturity.py
+	   dep_strike_asian.py
 img/                          -- some plots
 src/
     AsianCall.hpp             -- asian call pricing using heston model
